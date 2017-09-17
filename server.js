@@ -74,9 +74,10 @@ app.get("/scrape", function(req, res) {
 			});
 			
 		});
-
-	res.send("Scrape Complete");
-});
+		//res.send("Scrape Complete")
+		res.redirect("/");	
+	});
+});	
 
 //get articles we've scraped from mongodb
 app.get("/articles", function(req, res) {
@@ -102,7 +103,7 @@ app.get("/articles/:id", function(req, res) {
 			else {
 				res.json(doc);
 			}
-		});
+	});	
 });
 
 //save a new note
@@ -114,9 +115,9 @@ app.post("/articles/:id", function(req, res) {
 			console.log(error);
 		}
 		else {
-			Article.findOneAndUpdate({}, { $push: {"notes": doc._id} }, { new: true}, function(err, newdoc){
+			Article.findOneAndUpdate({"_id" : req.params.id}, { $push: {"notes": doc._id} }, function(err, newdoc){
 				if(err){
-					console.log(err)
+					res.send(err)
 				}
 				else {
 					res.send(newdoc);
@@ -127,19 +128,20 @@ app.post("/articles/:id", function(req, res) {
 });
 
 //delete a note
-app.delete("/delete/:id", function(req, res) {
-	Note.remove({ "_id" : req.params.id })
+// Delete functionality not working. Id is unknown
+app.post("/delete/:id", function(req, res) {
+	
+	Note.remove({ "_id" : req.params.id})
 		.exec(function(error, doc) {
 			if(error) {
 				console.log(error);
 			}
 			else {
 				console.log("note deleted");
-				res.redirect("/")
+				res.redirect("/");
 			}
-		})
-})
-})
+	});
+});
 
 app.listen(port, function(){
 	console.log("App is running");
